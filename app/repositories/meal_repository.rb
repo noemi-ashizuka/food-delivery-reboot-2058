@@ -25,7 +25,7 @@ class MealRepository
   def load_csv
     CSV.foreach(@csv_file_path, headers: :first_row, header_converters: :symbol) do |row|
       # p row
-      # turn the data from the csv to the correct type (id == integer)
+      # turn the data from the csv to the correct type (id => integer)
       row[:id] = row[:id].to_i
       row[:price] = row[:price].to_i
       # p row
