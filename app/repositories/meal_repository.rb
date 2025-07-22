@@ -1,10 +1,10 @@
-require 'csv'
-require_relative '../models/meal'
+require "csv"
+require_relative "../models/meal"
 
 class MealRepository
   def initialize(csv_file_path)
     @csv_file_path = csv_file_path
-    @meals = [] # an array of meal instances
+    @meals = [] # array of meal instances
     @next_id = 1
     load_csv if File.exist?(@csv_file_path)
   end
@@ -18,19 +18,28 @@ class MealRepository
     @next_id += 1
     @meals << meal
     save_csv
+    # p @meals
   end
+
+  def update
+	  save_csv
+  end
+
+	def destroy(index)
+	  @meals.delete_at(index)
+	  save_csv
+	end
 
   private
 
   def load_csv
-    CSV.foreach(@csv_file_path, headers: :first_row, header_converters: :symbol) do |row|
-      # p row
-      # turn the data from the csv to the correct type (id => integer)
-      row[:id] = row[:id].to_i
-      row[:price] = row[:price].to_i
-      # p row
-      # populate the @meals array with instances
-      @meals << Meal.new(row)
+    CSV.foreach(@csv_file_path, headers: :first_row, header_converters: :symbol) do |attributes|
+      # p attributes
+      # Make a new meal instance with the data from the attributes (changing the data types when needed)
+      attributes[:id] = attributes[:id].to_i
+      attributes[:price] = attributes[:price].to_i
+      # Shovel into the @meals array
+      @meals << Meal.new(attributes)
     end
     @next_id = @meals.last.id + 1 unless @meals.empty?
   end
@@ -38,7 +47,6 @@ class MealRepository
   def save_csv
     CSV.open(@csv_file_path, "wb") do |csv|
       csv << ["id", "name", "price"]
-      # iterate over all my meals and store each of them in the csv as an array of strings
       @meals.each do |meal|
         csv << [meal.id, meal.name, meal.price]
       end

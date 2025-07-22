@@ -7,10 +7,7 @@ class MealsController
   end
 
   def list
-    # get all the meals from the repository
-    meals = @meal_repository.all
-    # send them to the view to display
-    @meal_view.display(meals)
+    display_meals
   end
 
   def add
@@ -22,5 +19,29 @@ class MealsController
     meal = Meal.new(name: name, price: price)
     # Ask the repository to store the meal
     @meal_repository.create(meal)
+  end
+
+  def edit
+	  display_meals
+	  index = @meal_view.ask_for('number').to_i - 1
+	  meal = @meal_repository.all[index]
+	  meal.name = @meal_view.ask_for('new name')
+	  meal.price = @meal_view.ask_for('new price').to_i
+	  @meal_repository.update
+	end
+
+	def delete
+	  display_meals
+	  index = @meal_view.ask_for('number').to_i - 1
+	  @meal_repository.destroy(index)
+	end
+
+  private
+
+  def display_meals
+     # ask the repository to give me the meals instances in an array
+     meals = @meal_repository.all
+     # ask the view to display the meals
+     @meal_view.display(meals)
   end
 end

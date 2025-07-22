@@ -7,10 +7,7 @@ class CustomersController
   end
 
   def list
-    # get all the customers from the repository
-    customers = @customer_repository.all
-    # send them to the view to display
-    @customer_view.display(customers)
+    display_customers
   end
 
   def add
@@ -22,5 +19,27 @@ class CustomersController
     customer = Customer.new(name: name, address: address)
     # Ask the repository to store the customer
     @customer_repository.create(customer)
+  end
+
+  def edit
+	  display_customers
+	  index = @customer_view.ask_for('number').to_i - 1
+	  customer = @customer_repository.all[index]
+	  customer.name = @customer_view.ask_for('new name')
+	  customer.address = @customer_view.ask_for('new address')
+	  @customer_repository.update
+	end
+
+	def delete
+	  display_customers
+	  index = @customer_view.ask_for('number').to_i - 1
+	  @customer_repository.destroy(index)
+	end
+
+  private
+
+  def display_customers
+    customers = @customer_repository.all
+    @customer_view.display(customers)
   end
 end
